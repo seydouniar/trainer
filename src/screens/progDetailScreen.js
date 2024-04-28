@@ -2,7 +2,8 @@ import { Text ,FAB, Button} from "@rneui/base";
 import React, { Component } from "react";
 import { View, StyleSheet } from "react-native";
 import MyBackground from "../components/backgroung";
-import { ActionSheet } from "../components/common";
+import { ModalView } from "../components/common";
+import ExerciceForm from "../components/exerciceForm";
 
 
 class ProgDetailsScreen extends Component{
@@ -15,7 +16,11 @@ class ProgDetailsScreen extends Component{
     render(){
         const{name}=this.props.route.params;
         return <MyBackground>
-            <Text>{name}</Text>
+            <ModalView
+                closeModal={()=>this.setState({visible:false})}
+                visible={this.state.visible}>
+                <ExerciceForm onButtonPressed={()=>this.setState({visible:false})}/>
+            </ModalView>
             <FAB
                     visible={true}
                     icon={{ name: 'add', color: 'white' }}
@@ -25,12 +30,7 @@ class ProgDetailsScreen extends Component{
                         this.setState({visible:true})
                     }}
                 />
-                <ActionSheet visible={this.state.visible}
-                onDismiss={()=>this.setState({visible:false})}>
-                    <Button title="Exercies 0"/>
-                    <Button title="Exercies 1"/>
-                    <Button title="Exercies 2" />
-                </ActionSheet>
+                
         </MyBackground>
     }
 }

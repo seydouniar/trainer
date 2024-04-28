@@ -10,8 +10,8 @@ import { StyleSheet } from "react-native";
 class HomePage extends Component{
     state={visible:false,prog_id:""};
   
-     componentDidMount(){
-        this.props.getProgrammes();
+     async componentDidMount(){
+        await this.props.getProgrammes();
     }
     onDisconnectPressed(){
         this.props.disconnect();
