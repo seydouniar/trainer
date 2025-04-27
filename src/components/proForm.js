@@ -4,6 +4,7 @@ import { Input, CheckBox, Button } from "@rneui/base";
 import { Text } from "@rneui/themed";
 import { connect } from "react-redux";
 import * as actions from '../actions'
+import { exercices } from "../utils/exercices";
 
 class ProgForm extends Component{
 

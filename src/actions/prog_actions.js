@@ -1,6 +1,7 @@
-import {getDatabase,set,ref,push,onValue} from 'firebase/database';
+import {getDatabase,set,ref,push,onValue,update} from 'firebase/database';
 import {auth} from '../firebase';
 import { DELETE_PROG_FAILED, DELETE_PROG_SUCCESS, FETCH_PROG_FAILED, FETCH_PROG_SUCCESS } from './types';
+import { ca } from 'date-fns/locale';
 
 export const createProgramme = ({name,days},callback)=>(dispatch)=>{
     const db=getDatabase();
@@ -42,4 +43,21 @@ export const deleteProgramme = (prog_id)=>async(dispatch)=>{
     }).catch((error)=>{
         dispatch({type:DELETE_PROG_FAILED,payload:error})
     });
+}
+
+export const addExerciceToProgramme = (exercice,callback)=>async(dispatch)=>{
+    console.log(exercice);
+    
+    const db=getDatabase();
+    const userId = auth.currentUser.uid;
+    const addRef = ref(db,'users/'+userId+'/programmes/'+exercice.pro_id+'/exercices');
+    const exoRef = push(addRef);
+    set(exoRef,{
+        cat:exercice.cat,
+        id:exercice.id,
+        name : exercice.name,
+        repetition: exercice.repetition,
+        serie: exercice.serie,
+        poids: exercice.poids
+    }).then(()=>callback()).catch((e)=>console.log(e))
 }
