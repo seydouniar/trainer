@@ -1,53 +1,56 @@
-import { Input, Text, } from "@rneui/themed";
+import { Icon, Text, } from "@rneui/themed";
 import React,{Component} from "react";
 Image
 import { View,StyleSheet, TouchableWithoutFeedback, Image} from "react-native";
-import { Dropdown } from "./common";
+import { Card, Dropdown, NumberInput } from "./common";
 import { exercices } from "../utils/exercices";
 class ExerciceForm extends Component{
     render(){
-        const reps = [1,2,3,4,5,6,7,8,9,10,11,12];
-        const reps1= reps.map((x)=>{
-            return {label:x,value:x}
-        });
-        console.log(reps1);
+        const {name,repetition,poids,cat} = this.props;
+        console.log(this.props);
         
         return (
-            <View style={styles.viewContent}>
-                <View style={styles.viewExerxice}>
-                    <Text>Exercice</Text>
-                    <Dropdown
-                    data={exercices}
-                    onChange={(item)=>console.log(item.label)}
-                    placeholder="choisir l'exercice"
-                />
+            <Card>
+                <Text style={styles.title}>{name}</Text>
+                <View style={styles.viewpart}>
+                    <Text style={styles.text}>Repétition</Text>
+                    <NumberInput value={repetition}/>
                 </View>
-                <View>
-                    <Text>Repétition</Text>
-                    <Dropdown
-                    data={reps1}
-                    onChange={(item)=>console.log(item.label)}
-                    placeholder="nombre de repétition"
-                />
+                <View style={styles.viewpart}>
+                    <Text style={styles.text}>Poids(kg)</Text>
+                    <NumberInput value={poids}/>
                 </View>
-                <View>
-                    <Text>Poids</Text>
-                    <Input />
+                <View style={styles.viewpart}>
+                    <Text style={styles.text}>catégorie</Text>
+                    <Text>{cat}</Text>
                 </View>
-            </View>
-          
+                <View style={styles.viewpart}>
+                    <Icon name="edit" onPress={this.props.onPressEdit}/>
+                    <Icon name="delete" onPress={this.props.onPressDelete}/>
+                </View>
+            </Card>
         )
     }
 }
+const styles = StyleSheet.create({
+    viewpart : {
+        flexDirection:'row',
+        alignItems:'center',
 
-const styles = StyleSheet.create(
-    {
-        viewContent:{
-           
-        },
-        viewExerxice:{
-              
-        }
+        paddingBottom:5,
+        paddingTop:5,
+        justifyContent:'space-between'
+    },
+    title:{
+        alignItems:'center',
+        fontSize: 30,
+        fontWeight:'bold'    
+    },
+    text:{
+        fontSize:20,
+        fontWeight:'400'
     }
-)
+
+})
+
 export default ExerciceForm;

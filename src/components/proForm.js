@@ -1,66 +1,42 @@
 import React,{Component} from "react";
 import { StyleSheet, View } from "react-native";
-import { Input, CheckBox, Button } from "@rneui/base";
-import { Text } from "@rneui/themed";
+import { Input, Button } from "@rneui/base";
 import { connect } from "react-redux";
 import * as actions from '../actions'
-import { exercices } from "../utils/exercices";
+
 
 class ProgForm extends Component{
 
-    state = {days: [
-        {id:1,day:'Lundi',checked:false},
-        {id:2,day:'Mardi',checked:false},
-        {id:3,day:'Mercredi',checked:false},
-        {id:4,day:'Jeudi',checked:false},
-        {id:5,day:'Vendredi',checked:false},
-        {id:6,day:'Samedi',checked:false},
-        {id:7,day:'Dimanche',checked:false}
-    ],
-    name:""
-};
+    state = { name:""};
     onPressButton(e){
         e.preventDefault();
-        console.log(this.props);
-        const {name,days} = this.state;
-        this.props.createProgramme({name,days},()=>{
+        
+        const {name} = this.state;
+        this.props.createProgramme({name},()=>{
             this.props.onPressButton();
         })
     }
-    toggleCheckbox(id,index){
-        const checkboxData = [...this.state.days];
-        checkboxData[index].checked = !checkboxData[index].checked;
-        this.setState({days:checkboxData});
-    }
-
-    daysRender(){
-        return this.state.days.map((cb,index)=>{
-            return (<View key={cb.id} >
-                <CheckBox 
-                    title={cb.day}
-                    checked={cb.checked}
-                    onPress={()=>this.toggleCheckbox(cb.id,index)}
-                />
-            </View>)
-        });
-
-    }
+   
+    
     render(){
         return(
-            <View> 
+            <View style={styles.viewStyle}> 
                 <Input 
-                    placeholder="Nom de l'entraînement"
+                    placeholder="Nom de Programme"
                     value={this.state.name}
                     onChangeText={(text)=>this.setState({name:text})}
                 />
-                <Text>Fréquence</Text>
-                {this.daysRender()}
+                
                 <Button 
-                    title="Créer"
+                    title="Enrégistrer"
                     onPress={this.onPressButton.bind(this)}
                     containerStyle={{
-                        width:100,
-                        alignSelf:'center'
+                        alignSelf:'center',
+                        alignContent:'center',
+                        borderRadius:5,
+                        margin:5,
+                        padding:10,
+                        
                     }}
                     />
             </View>
@@ -68,10 +44,48 @@ class ProgForm extends Component{
     }
 }
 
-const styles =StyleSheet.create({
+class SeanceForm extends Component {
+    state = { name:""};
+    onPressButton(e){
+        e.preventDefault();
+        
+        const {name} = this.state;
+        this.props.ajouterSeance({prog_id:this.props.prog_id,name})
+    }
+    render () {
+        return (<View style={styles.viewStyle}> 
+        <Input 
+            placeholder="Nom de Séance"
+            value={this.state.name}
+            onChangeText={(text)=>this.setState({name:text})}
+        />
+        
+        <Button 
+            title="Enrégistrer"
+            onPress={this.onPressButton.bind(this)}
+            containerStyle={{
+                alignSelf:'center',
+                alignContent:'center',
+                borderRadius:5,
+                margin:5,
+                padding:10,
+                
+            }}
+            />
+    </View>)
 
+    }
+}
+
+const styles =StyleSheet.create({
+    viewStyle : {
+        justifyContent: 'center',
+        alignContent:'center',
+        flex:1
+    }
 })
 const mapStateToProps = (state)=>{
-    return state.auth;
+    return state.prog;
 }
+
 export default connect(mapStateToProps,actions)(ProgForm);

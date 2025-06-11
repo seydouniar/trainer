@@ -1,16 +1,16 @@
-import {getDatabase,set,ref,push,onValue,update} from 'firebase/database';
+import {getDatabase,serverTimestamp,set,ref,push,onValue} from 'firebase/database';
 import {auth} from '../firebase';
-import { DELETE_PROG_FAILED, DELETE_PROG_SUCCESS, FETCH_PROG_FAILED, FETCH_PROG_SUCCESS } from './types';
-import { ca } from 'date-fns/locale';
+import {   FETCH_EXERCICES_FAILED, FETCH_EXERCICES_SUCCESS, FETCH_PROG_FAILED, FETCH_PROG_SUCCESS, FETCH_SEANCE_FAILED, FETCH_SEANCE_SUCCESS } from './types';
 
-export const createProgramme = ({name,days},callback)=>(dispatch)=>{
+
+export const createProgramme = ({name},callback)=>(dispatch)=>{
     const db=getDatabase();
     const userId = auth.currentUser.uid;
     const progListRef = ref(db,'users/'+userId+'/programmes');
     const newProgRef = push(progListRef);
     set(newProgRef,{
-        name:name,
-        days:days
+        name,
+        createAt: serverTimestamp()
     }).then(()=>{callback()})
     .catch((e)=>console.log(e));
 }
@@ -22,15 +22,19 @@ export const getProgrammes = ()=>async(dispatch)=>{
     const refdb = ref(db,'users/'+userId+'/programmes');
     await onValue(refdb,(snapshot)=>{
         let programmes=[];
+        
         snapshot.forEach((childSnapshot)=>{
-            programmes.push({...childSnapshot.val(),id:childSnapshot.key});
+            //get exercices 
+            programmes.push(
+                {
+                ...childSnapshot.val(),
+                id:childSnapshot.key, 
+            });
         });
         dispatch({type:FETCH_PROG_SUCCESS,payload:programmes})
-        console.log(programmes);
     },
     (error)=>{
         dispatch({type:FETCH_PROG_FAILED,payload:error})
-        console.log(error);
     })
 }
 
@@ -39,25 +43,71 @@ export const deleteProgramme = (prog_id)=>async(dispatch)=>{
     const userId = auth.currentUser.uid;
     const rmRef = ref(db,'users/'+userId+'/programmes/'+prog_id);
     set(rmRef,null).then(()=>{
-        dispatch({type:DELETE_PROG_SUCCESS,payload:prog_id});
+       console.log("suppression de "+prog_id);
+       
     }).catch((error)=>{
-        dispatch({type:DELETE_PROG_FAILED,payload:error})
+       console.log(error);
+       
     });
 }
 
-export const addExerciceToProgramme = (exercice,callback)=>async(dispatch)=>{
-    console.log(exercice);
+//Ajouter de la séance
+export const  ajouterSeance = (seance,callback)=>async(dispatch)=>{
     
-    const db=getDatabase();
+    
     const userId = auth.currentUser.uid;
-    const addRef = ref(db,'users/'+userId+'/programmes/'+exercice.pro_id+'/exercices');
-    const exoRef = push(addRef);
-    set(exoRef,{
-        cat:exercice.cat,
-        id:exercice.id,
-        name : exercice.name,
-        repetition: exercice.repetition,
-        serie: exercice.serie,
-        poids: exercice.poids
-    }).then(()=>callback()).catch((e)=>console.log(e))
+    const db = getDatabase();
+    const newRef = ref(db,'users/'+userId+'/seances/'+seance.prog_id);
+    const seancesRef = push(newRef)
+    set(seancesRef,{name:seance.name}).then(()=>callback()
+    ).catch((err)=>console.log(err.message))
+}
+
+export const getSeances = (prog)=>async(dispatch)=>{
+    const userId = auth.currentUser.uid;
+    const db = getDatabase();
+    const newRef = ref(db,'users/'+userId+'/seances/'+prog.id);
+    onValue(newRef,(snapshot)=>{
+        let seances = [];
+        snapshot.forEach((childSnapshot)=>{
+            seances.push({
+                ...childSnapshot.val(),
+                id:childSnapshot.key
+            })
+        });
+        dispatch({type:FETCH_SEANCE_SUCCESS,payload:{seances,id:prog.id}})
+    },(error)=>{dispatch({type:FETCH_SEANCE_FAILED, payload:error})})
+}
+
+export const addExercicieToSeance = (exercice)=>async(dispatch) =>{
+    const userId = auth.currentUser.uid;
+    const db = getDatabase();
+    const newRef = ref(db,'users/'+userId+'/exercices/'+exercice.seance_id);
+    const exoRef = push(newRef);
+    set(exoRef,{name:exercice.name,categorie:exercice.cat})
+
+}
+
+export const getExercicesSeance = (prog_id,id)=>async(dispatch)=>{
+    const userId = auth.currentUser.uid;
+    const db = getDatabase();
+    const exoRef = ref(db,'users/'+userId+'/exercices/'+id);
+    
+ 
+    
+    onValue(exoRef,(snapshot)=>{
+        
+        let exercices =[]
+        snapshot.forEach(snapshotChild=>{
+            exercices.push({
+                ...snapshotChild.val(),id:snapshotChild.key,
+            })
+        });
+        dispatch({type:FETCH_EXERCICES_SUCCESS,payload:{exercices,prog_id,seance_id:id}})
+    }, (error)=>{
+        dispatch({type:FETCH_EXERCICES_FAILED,payload:error})
+    }
+)
+
+
 }

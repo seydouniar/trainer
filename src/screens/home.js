@@ -9,6 +9,11 @@ import ProgForm from "../components/proForm";
 import { StyleSheet } from "react-native";
 class HomePage extends Component{
     state={visible:false,prog_id:""};
+
+    constructor(props){
+        super(props)
+        this.props.getUserProfile();
+    }
   
      async componentDidMount(){
         await this.props.getProgrammes();
@@ -22,7 +27,8 @@ class HomePage extends Component{
     }
 
     onItemPressed(item){
-        this.props.navigation.navigate("details",item);
+        this.props.navigation.push("details",item);
+        
     }
     render (){
         const {programmes} = this.props
@@ -42,7 +48,7 @@ class HomePage extends Component{
                     }}
                 />
                 <ModalView 
-                    title="Nouvel entrainement"
+                    title="Nouveau Programme"
                     visible={this.state.visible}
                     closeModal={()=>this.setState({visible:false})}
                 >

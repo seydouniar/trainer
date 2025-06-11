@@ -3,7 +3,13 @@ import {
     LOGIN_SUCCESS,
     EMAIL_CHANGED,
     PASSWORD_CHANGED,
-    ERROR_CHANGED
+    ERROR_CHANGED,
+    NAME_CHANGED,
+    TAILLE_CHANGED,
+    POIDS_CHANGED,
+    AGE_CHANGED,
+    FETCH_USER_SUCCESS,
+    FETCH_PROG_FAILED
 } from './types';
 
 import {auth} from '../firebase';
@@ -13,6 +19,8 @@ import {
     signOut,
     onAuthStateChanged
 } from 'firebase/auth';
+
+import {getDatabase,set,ref,onValue} from 'firebase/database';
 
 export const emailChanged = (text)=>(dispatch)=>{
     dispatch({type:EMAIL_CHANGED,payload:text})
@@ -24,6 +32,26 @@ export const passwordChanged = (text)=>(dispatch)=>{
 
 export const errorChanged=(text)=>(dispatch)=>{
     dispatch({type:ERROR_CHANGED,payload:text})
+}
+
+export const nameChanged = (text)=>(dispatch)=>{
+  dispatch({type:NAME_CHANGED,payload:text});  
+}
+
+export const tailleChanged = (text)=>(dispatch)=>{
+    dispatch({type:TAILLE_CHANGED,payload:text});  
+}
+
+export const poidsChanged = (text)=>(dispatch)=>{
+    dispatch({type:POIDS_CHANGED,payload:text});  
+}
+
+export const ageChanged = (text)=>(dispatch)=>{
+    dispatch({type:AGE_CHANGED,payload:text});  
+}
+
+export const imageChanged = (text)=>(dispatch)=>{
+    dispatch({type:IMAGE_CHANGED,payload:text});  
 }
 
 export const signUpFirebase = ({email,password},callback,errFunction)=>async(dispatch)=>{
@@ -56,11 +84,13 @@ export const signInFirebase = ({email,password},callback,errFunction)=>async(dis
         });
 }
 
-export const disconnect=()=>async(dispatch)=>{
+export const disconnect=(callback)=>async(dispatch)=>{
     signOut(auth).then(()=>{
-        dispatch({type:LOGIN_FAILED});}
+        callback();
+    }
     ).catch((e)=>{
-        dispatch({type:LOGIN_FAILED, payload:getErrorMessage(e)});
+       console.log(e);
+       
     })
 }
 
@@ -74,6 +104,30 @@ export const authStateChanged = (connected,disconnected)=>async(dispatch)=>{
             disconnected();
         }
       });
+}
+
+export const setUserProfile = (user,callback)=>async(disptch)=>{
+    const userId = auth.currentUser.uid;
+    const db = getDatabase();
+    const refdb = ref(db,'users/'+userId+'/profile');
+    set(refdb,{
+        name:user.name,
+        taille:user.taille,
+        poids:user.poids,
+        age:user.age,
+        image: 'url'
+    }).then(()=>callback()).catch((err)=>console.log(err)
+    )
+}
+
+export const getUserProfile = ()=>async(disptch)=>{
+    const userId = auth.currentUser.uid;
+    const db = getDatabase();
+    const refdb = ref(db,'users/'+userId+'/profile');
+    onValue(refdb,(snapshot)=>{
+        const user = snapshot.val();
+        disptch({type:FETCH_USER_SUCCESS,payload:user})
+    }),(error)=>{disptch({type:FETCH_PROG_FAILED,payload:error.message})}
 }
 
 const getErrorMessage = (error) =>{

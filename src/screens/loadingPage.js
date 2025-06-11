@@ -10,6 +10,7 @@ class LoadingPage extends Component{
         this.onCompleteLogin();
     }
     onCompleteLogin(){
+        
         this.props.authStateChanged(
             ()=>{
                 this.props.navigation

@@ -22,6 +22,8 @@ import HistoriquePage from './src/screens/historiquePage';
 import ProfilePage from './src/screens/profilPage';
 import SettingPage from './src/screens/settingPage';
 import { Icon, Text } from '@rneui/themed';
+import CreateProfile from './src/screens/createProfile';
+import SeanceDetails from './src/screens/seanceDetails';
 
 
 const Stack = createNativeStackNavigator();
@@ -78,6 +80,7 @@ const StartScreen = () => {
             <Stack.Screen name="loading" component={LoadingPage} />
             <Stack.Screen name="signin" component={SigninPage} />
             <Stack.Screen name="signup" component={SignupPage} />
+            <Stack.Screen name='create-profile' component={CreateProfile} />
         </Stack.Navigator>;
 }
 
@@ -85,6 +88,7 @@ const HomeScreen = () => {
   return <Stack.Navigator screenOptions={{headerShown:false}}>
             <Stack.Screen name="home" component={HomePage} />
             <Stack.Screen name="details" component={ProgDetailsScreen} />
+            <Stack.Screen name="seances" component={SeanceDetails} />
         </Stack.Navigator>;
 }
 

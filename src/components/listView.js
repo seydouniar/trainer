@@ -16,28 +16,37 @@ class ListView extends Component{
     }
     renderItem(){
         const {programmes} = this.props;
+
+        const options = {
+            
+            year: "numeric",
+            month: "numeric",
+            day: "numeric",
+          };
+
         if(programmes===undefined){
             return null
         }
 
         return programmes.map((item)=>{
+           
+            
             return <Card key={item.id}>
-                <ListItem.Swipeable
-                    onSwipeEnd={()=>{this.props.delete(item.id)}}
-                    leftContent={(reset)=>{reset()}}
+                <ListItem.Swipeable style={styles.itemStyle}
+                    onSwipeEnd={()=>{}}
+                    leftContent={()=>(
+                    <Icon 
+                        name="delete" 
+                        color="red" 
+                        onPress={()=>this.props.delete(item.id)} 
+                        size={80}/>
+                    )}
                     rightContent={(reset)=>{reset()}}
                     onPress={()=>this.props.itemPressed(item)}
                 >
                     <ListItem.Content>
                         <ListItem.Title right style={styles.title}>{item.name}</ListItem.Title>
-                        <ListItem.Subtitle>
-                            {this.renderDays(item.days)}
-                        </ListItem.Subtitle>
-                        <ListItem.Subtitle>
-                            <Icon name="dribbble" type="font-awesome" size={12}/>
-                            {item.set} 
-                            <Icon name="time-outline" type="ionicon" size={12}/>
-                        </ListItem.Subtitle>
+                        <ListItem.Subtitle>{(new Date(item.createAt)).toLocaleDateString("fr-FR",options)}</ListItem.Subtitle>
                     </ListItem.Content>
                     <TouchableOpacity>
                         <Icon name="play-circle" type="ionicon" size={40}/>
@@ -57,20 +66,16 @@ class ListView extends Component{
 }
 
 const styles = StyleSheet.create({
-    daysView:{
-        flexDirection:'row',
-        alignContent:'space-between',
-        marpginVertical:12,
-        alignItems:'flex-end'
-    },
-    dayText:{
-        marginLeft:5,
-    },
+   itemStyle:{
+    backgroundColor:"white"
+   },
     title:{
         fontWeight:'bold',
         fontSize:20,
-        color:'black'
-    }
+        color:'black',
+       
+    },
+    
 
 
 })

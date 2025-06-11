@@ -9,7 +9,6 @@ class SigninPage extends Component{
     async onButtonPressed(e){
         e.preventDefault();
         const {email,password,error} = this.props;
-        console.log(email,password);
         await this.props.signInFirebase({email,password},
             ()=>{
                 this.props.navigation.navigate("loading");

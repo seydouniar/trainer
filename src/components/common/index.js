@@ -5,4 +5,5 @@ export * from './ActionSheet';
 export * from './select';
 export * from './datePicker';
 export * from './timePicker'
-export * from './dropDown'
+export * from './dropDown';
+export * from './numberInput';

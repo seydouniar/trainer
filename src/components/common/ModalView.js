@@ -22,6 +22,9 @@ const styles = StyleSheet.create({
     container:{
         flex:1,
         justifyContent:'flex-start',
+        marginVertical:40,
+        marginHorizontal:10,
+        paddingVertical:10,
     },
     text:{
         alignSelf:'center',

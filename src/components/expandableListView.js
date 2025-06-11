@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from "react";
 import { ListItem } from '@rneui/themed';
-import { ScrollView, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 
 const ExpandableListView = ({data,onPressedItem})=> {
     
-    return (<ScrollView>
+    return (<ScrollView style={styles.scrollviewStyle}>
             {
                 data.map((list,i)=>{
                     return (
@@ -50,6 +50,12 @@ const MyAccordion = ({title,item,itemPressed})=>{
     </ListItem.Accordion>
 
 }
+
+const styles = StyleSheet.create({
+    scrollviewStyle:{
+        marginVertical:20
+    }
+})
 export default ExpandableListView;
 
 

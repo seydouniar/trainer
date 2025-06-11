@@ -1,53 +1,51 @@
-import { FAB, Button} from "@rneui/base";
+import { FAB} from "@rneui/base";
 import React, { Component } from "react";
-import { View, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import MyBackground from "../components/backgroung";
 import { ModalView } from "../components/common";
-import ExpandableListView from "../components/expandableListView";
-import { exercices } from "../utils/exercices";
+
 
 import * as actions from "../actions";
 import {connect} from "react-redux";
+import SeanceForm from "../components/seanceForm";
+import ListGrid from "../components/listGrid";
 
 class ProgDetailsScreen extends Component{
     state = {visible:false};
-    componentDidMount(){
+    async componentDidMount(){
+        const {id} = this.props.route.params;
+        this.props.getSeances({id});
         this.props.navigation.setOptions({
             title:this.props.route.params.name
         })
+       
     }
     onItemPressed (item) {
-        const{id}=this.props.route.params;
-        
-        
-        const exercice = {
-            pro_id:id,
-            cat:item.cat,
-            id:item.id,
-            name : item.label,
-            repetition: 3,
-            serie: 3,
-            poids: 10
-        }
-
-        this.props.addExerciceToProgramme(exercice,()=>console.log("success") );
-        
-        
+        const {id} = this.props.route.params;
+        item = {...item.item,prog_id:id}
+        this.props.navigation.push("seances",{item});
+       
         
     }
     render(){
-        const{name,id}=this.props.route.params;
+        const {id} = this.props.route.params;
+        const {programmes} = this.props;
+        const prog = programmes.find(p=>p.id===id);
         
+      
         return <MyBackground>
+            
+            <ListGrid data={prog.seances} 
+                numColumns={2}
+                onPressedItem={(item)=>{
+                    this.onItemPressed(item);
+                    }}/>
+             
             <ModalView
                 closeModal={()=>this.setState({visible:false})}
                 visible={this.state.visible}
                >
-                <ExpandableListView onPressedItem={(item)=>{
-                    this.setState({visible:false})
-                    this.onItemPressed(item)
-                }} data={exercices}/>
-                
+                <SeanceForm prog={prog} onPressButton={()=>this.setState({visible:false})}/>
             </ModalView>
             <FAB
                     visible={true}
